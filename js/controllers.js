@@ -1,6 +1,6 @@
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', ['reddit'])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', function($scope, $ionicModal, $timeout, redditListings) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -31,7 +31,12 @@ angular.module('starter.controllers', [])
       $scope.closeLogin();
     }, 1000);
   };
-})
+
+  redditListings.subredditListGet({}, function (err, data) {
+    console.log(data);
+  });
+
+}])
 
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
