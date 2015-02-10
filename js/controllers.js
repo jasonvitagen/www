@@ -1,6 +1,6 @@
-angular.module('starter.controllers', ['reddit'])
+angular.module('starter.controllers', ['reddit', 'helpers'])
 
-.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', function($scope, $ionicModal, $timeout, redditListings) {
+.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', '$ionicLoading', function($scope, $ionicModal, $timeout, redditListings, $ionicLoading) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -32,22 +32,39 @@ angular.module('starter.controllers', ['reddit'])
     }, 1000);
   };
 
-  redditListings.subredditListGet({}, function (err, data) {
+
+  $scope.$on('scroll', function (event, data) {
+    console.log(event);
     console.log(data);
+  });
+
+  // $ionicLoading.show({
+  //     template: '<ion-spinner icon="spiral" class="spinner spinner-spiral"></ion-spinner>'
+  //   });
+
+
+}])
+
+.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', function($scope, $window, redditListings) {
+
+  $scope.redditPosts = {};
+
+  redditListings.getFrontPagePosts({
+
+    type : 'hot'
+
+  }, function (err, response) {
+    console.log(response.data.children);
+    $scope.redditPosts.hot = response.data.data.children;
+
   });
 
 }])
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
-
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
+
+
+
+
+// $scope.$broadcast('scroll.infiniteScrollComplete');

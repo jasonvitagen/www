@@ -1,0 +1,43 @@
+<!-- <ion-view view-title="Playlists">
+  <ion-content>
+	<ion-list>
+	  <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
+		{{playlist.title}}
+	  </ion-item>
+	</ion-list>
+  </ion-content>
+</ion-view>
+ -->
+ <ion-view view-title="reddit: the front page of the internet">
+ <ion-tabs>
+  <ion-tab title="Hot">
+
+	<ion-header-bar>
+	</ion-header-bar>
+
+	<ion-content overflow-scroll="true" on-infinite-scrolling="loadMore()" physical-list=".list" message-append="ion-list" force-scroll-bottom="ion-content">
+		  <ion-list>
+			<ion-item ng-repeat="item in redditPosts.hot">{{ item.data.title }}</ion-item>
+		  </ion-list>
+			
+
+	</ion-content>
+  </ion-tab>
+
+  <ion-tab title="New">
+	<!-- Tab 2 content -->
+  </ion-tab>
+
+  <ion-tab title="Top">
+	<!-- Tab 3 content -->
+  </ion-tab>
+
+  <ion-tab title="Random">
+	<!-- Tab 3 content -->
+  </ion-tab>
+  <ion-tab title="Controversial">
+	<!-- Tab 3 content -->
+  </ion-tab>
+
+</ion-tabs>
+</ion-view>
