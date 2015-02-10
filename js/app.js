@@ -48,15 +48,15 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
-    .state('app.playlists', {
-      url: "/playlists",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/redditPosts.html",
-          controller: 'redditPostsCtrl'
-        }
+  .state('app.redditPosts', {
+    url: "/redditPosts",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/redditPosts.html",
+        controller: 'redditPostsCtrl'
       }
-    })
+    }
+  })
 
   .state('app.single', {
     url: "/playlists/:playlistId",

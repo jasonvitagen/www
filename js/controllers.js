@@ -38,6 +38,13 @@ angular.module('starter.controllers', ['reddit', 'helpers'])
     console.log(data);
   });
 
+  redditListings.getSubredditList({
+
+  }, function (err, response) {
+    $scope.listings = response.data.data.children;
+  });
+
+
   // $ionicLoading.show({
   //     template: '<ion-spinner icon="spiral" class="spinner spinner-spiral"></ion-spinner>'
   //   });
