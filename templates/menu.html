@@ -42,7 +42,19 @@
     <ion-header-bar class="bar-stable">
       <h1 class="title">Subreddits</h1>
     </ion-header-bar>
-    <ion-content>
+    <ion-content  id="subreddits-list" 
+                  overflow-scroll="true" 
+                  scroll-reaches-bottom 
+                  physical-list="#subreddits-list .list" 
+                  bottom-reached-event-name="scrollings.subredditsListBottomReached" 
+                  clear-threshold-event-name="scrollings.subredditsListClearThreshold"
+                  wait-loader
+                  append-to="#subreddits-list ion-list"
+                  append-event-name="scrollings.showSubredditsListLoader"
+                  remove-event-name="scrollings.removeSubredditsListLoader"
+                  loader-image-path="./img/reload.svg"
+                  force-scroll-bottom="#subreddits-list"
+                  loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
       <ion-list>
         <ion-item nav-clear>
           Search

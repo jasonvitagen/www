@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['reddit', 'helpers'])
+angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
 .controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', '$ionicLoading', function($scope, $ionicModal, $timeout, redditListings, $ionicLoading) {
   // Form data for the login modal
@@ -32,23 +32,24 @@ angular.module('starter.controllers', ['reddit', 'helpers'])
     }, 1000);
   };
 
-
-  $scope.$on('scroll', function (event, data) {
-    console.log(event);
-    console.log(data);
-  });
-
   redditListings.getSubredditList({
 
   }, function (err, response) {
     $scope.listings = response.data.data.children;
   });
 
+  $scope.$on('scrollings.subredditsListBottomReached', function () {
+    console.log('ada');
+    $scope.$broadcast('scrollings.showSubredditsListLoader');
+    setTimeout(function () {
+      $scope.$broadcast('scrollings.subredditsListClearThreshold');
+      $scope.$broadcast('scrollings.removeSubredditsListLoader');
+    }, 3000);
+  });
 
   // $ionicLoading.show({
   //     template: '<ion-spinner icon="spiral" class="spinner spinner-spiral"></ion-spinner>'
   //   });
-
 
 }])
 
@@ -56,15 +57,15 @@ angular.module('starter.controllers', ['reddit', 'helpers'])
 
   $scope.redditPosts = {};
 
-  redditListings.getFrontPagePosts({
+  // redditListings.getFrontPagePosts({
 
-    type : 'hot'
+  //   type : 'hot'
 
-  }, function (err, response) {
-    console.log(response.data.children);
-    $scope.redditPosts.hot = response.data.data.children;
+  // }, function (err, response) {
+  //   console.log(response.data.children);
+  //   $scope.redditPosts.hot = response.data.data.children;
 
-  });
+  // });
 
 }])
 
