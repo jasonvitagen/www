@@ -9,10 +9,12 @@ angular
 				var queryString = [];
 				for (var key in args) {
 					if (args.hasOwnProperty(key)) {
-						queryString.push(key);
-						queryString.push('=');
-						queryString.push(args[key]);
-						queryString.push('&');
+						if (args[key]) {
+							queryString.push(key);
+							queryString.push('=');
+							queryString.push(args[key]);
+							queryString.push('&');
+						}
 					}
 				}
 				return queryString.join('').slice(0, -1);

@@ -86,7 +86,6 @@ angular
 
 				if (attrs['forceScrollBottom']) { // scroll to loader
 					document.querySelector(attrs['forceScrollBottom']).scrollTop += 80;
-					console.log('mama');
 				}
 			});
 

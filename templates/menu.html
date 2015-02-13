@@ -57,7 +57,7 @@
                   loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
       <ion-list>
         <ion-item nav-clear>
-          Search
+          <input type="text" ng-model="subredditListsKeyword" ng-change="filterSubredditsList(subredditListsKeyword)" placeholder="Filter Subreddits List">
         </ion-item>
         <ion-item nav-clear menu-close ng-repeat="item in listings">
           {{ item.data.title }}

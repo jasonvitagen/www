@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
-.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', '$ionicLoading', function($scope, $ionicModal, $timeout, redditListings, $ionicLoading) {
+.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', 'reddit.states', '$filter', '$ionicLoading', function($scope, $ionicModal, $timeout, redditListings, redditStates, $filter, $ionicLoading) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -32,20 +32,59 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
     }, 1000);
   };
 
-  redditListings.getSubredditList({
+  $scope.listings = [];
+  redditStates.subredditsList = [];
 
-  }, function (err, response) {
-    $scope.listings = response.data.data.children;
-  });
+  $scope.users = {};
+  $scope.getSubredditsList = function () {
+
+    $scope.$broadcast('scrollings.showSubredditsListLoader');
+    redditListings.getSubredditList({
+      after : redditStates.subredditsListAfter
+    }, function (err, response) {
+      $scope.$broadcast('scrollings.removeSubredditsListLoader');
+      $scope.$broadcast('scrollings.subredditsListClearThreshold');
+      console.log(response.data.data.after);
+      redditStates.subredditsListAfter = response.data.data.after;
+      redditStates.subredditsList = redditStates.subredditsList.concat(response.data.data.children);
+      $scope.listings = $scope.listings.concat(response.data.data.children);
+    });
+
+  }
+
+  $scope.getSubredditsList();
 
   $scope.$on('scrollings.subredditsListBottomReached', function () {
-    console.log('ada');
-    $scope.$broadcast('scrollings.showSubredditsListLoader');
-    setTimeout(function () {
-      $scope.$broadcast('scrollings.subredditsListClearThreshold');
-      $scope.$broadcast('scrollings.removeSubredditsListLoader');
-    }, 3000);
+    $scope.getSubredditsList();
   });
+
+  $scope.filterSubredditsList = function (keyword) {
+    console.log(1, $scope.listings.length);
+    var items = redditStates.subredditsList;
+    if (angular.isDefined(keyword) && keyword != '') {
+      var results = [];
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].data.title.toLowerCase().indexOf(keyword) > -1) {
+          results.push(items[i]);
+        }
+      }
+      $scope.listings = results;
+    } else {
+      console.log(2, $scope.listings.length);
+      $scope.listings = items;
+    }
+  }
+
+
+  // $scope.$broadcast('scrollings.showSubredditsListLoader');
+  // $scope.$on('scrollings.subredditsListBottomReached', function () {
+  //   console.log('ada');
+  //   $scope.$broadcast('scrollings.showSubredditsListLoader');
+  //   setTimeout(function () {
+  //     $scope.$broadcast('scrollings.subredditsListClearThreshold');
+  //     $scope.$broadcast('scrollings.removeSubredditsListLoader');
+  //   }, 3000);
+  // });
 
   // $ionicLoading.show({
   //     template: '<ion-spinner icon="spiral" class="spinner spinner-spiral"></ion-spinner>'

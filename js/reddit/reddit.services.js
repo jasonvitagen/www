@@ -1,11 +1,11 @@
 angular
 	.module('reddit')
-	.service('reddit.listings', ['reddit.baseUrl', '$http', function (baseUrl, $http) {
+	.service('reddit.listings', ['reddit.baseUrl', '$http', 'queryStringBuilder', function (baseUrl, $http, queryStringBuilder) {
 
 		this.getSubredditList = function (args, callback) {
 
 			$http
-				.get(baseUrl + 'subreddits.json')
+				.get(baseUrl + 'subreddits.json?' + queryStringBuilder(args))
 				.then(function (data) {
 					callback(null, data);
 				});
@@ -29,4 +29,7 @@ angular
 
 		};
 
+	}])
+	.service('reddit.states', [function () {
+		return {};
 	}]);
