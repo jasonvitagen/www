@@ -25,7 +25,7 @@ angular
 					return;
 				}
 
-				if (document.querySelector(attrs['physicalList']).getBoundingClientRect().bottom <= $window.innerHeight) { // whenever scroll reaches bottom
+				if (document.querySelector(attrs['physicalList']).clientHeight > 100 && document.querySelector(attrs['physicalList']).getBoundingClientRect().bottom <= $window.innerHeight) { // whenever scroll reaches bottom
 
 					$rootScope.$broadcast(attrs['bottomReachedEventName'], {});
 					threshold = false; // prevents multiple triggers

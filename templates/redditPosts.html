@@ -10,33 +10,173 @@
  -->
  <ion-view view-title="reddit: the front page of the internet">
  <ion-tabs>
-  <ion-tab title="Hot">
+  <ion-tab title="Hot" on-select="getPosts({type : 'hot'})">
 
 	<ion-header-bar>
 	</ion-header-bar>
 
-	<ion-content overflow-scroll="true" on-infinite-scrolling="loadMore()" physical-list=".list" message-append="ion-list" force-scroll-bottom="ion-content">
+	<ion-content 	id="reddit-posts-hot"
+	 				overflow-scroll="true"
+                  	scroll-reaches-bottom
+                  	physical-list="#reddit-posts-hot .list"
+                  	bottom-reached-event-name="scrollings.redditPostsBottomReached"
+                  	clear-threshold-event-name="scrollings.redditPostsClearThreshold"
+					wait-loader
+					append-to="#reddit-posts-hot ion-list"
+					append-event-name="scrollings.showRedditPostsLoader"
+                 	 remove-event-name="scrollings.removeRedditPostsLoader"
+                  	loader-image-path="./img/reload.svg"
+                 	force-scroll-bottom="#reddit-posts-hot"
+					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
 		  <ion-list>
-			<ion-item ng-repeat="item in redditPosts.hot">{{ item.data.title }}</ion-item>
+			<ion-item ng-repeat="item in redditPosts.hot">
+				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
+					<img src="{{ item.data.thumbnail }}" alt="">
+					<h2>{{ item.data.score }}</h2>
+					<h2><b>{{ item.data.title }}</b></h2>
+					<h2>in {{ item.data.subreddit }}</h2>
+					<h2>{{ item.data.num_comments }} comments</h2>
+					<h2>by {{ item.data.author }}</h2>
+					
+				</a>
+			</ion-item>
 		  </ion-list>
 			
 
 	</ion-content>
   </ion-tab>
 
-  <ion-tab title="New">
-	<!-- Tab 2 content -->
+  <ion-tab title="New" on-select="getPosts({type : 'new'})">
+
+	<ion-header-bar>
+	</ion-header-bar>
+
+	<ion-content 	id="reddit-posts-new"
+	 				overflow-scroll="true"
+                  	scroll-reaches-bottom
+                  	physical-list="#reddit-posts-new .list"
+                  	bottom-reached-event-name="scrollings.redditPostsBottomReached"
+                  	clear-threshold-event-name="scrollings.redditPostsClearThreshold"
+					wait-loader
+					append-to="#reddit-posts-new ion-list"
+					append-event-name="scrollings.showRedditPostsLoader"
+                 	 remove-event-name="scrollings.removeRedditPostsLoader"
+                  	loader-image-path="./img/reload.svg"
+                 	force-scroll-bottom="#reddit-posts-new"
+					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
+		  <ion-list>
+			<ion-item ng-repeat="item in redditPosts.new">
+				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
+					<img src="{{ item.data.thumbnail }}" alt="">
+					<h2>{{ item.data.score }}</h2>
+					<h2><b>{{ item.data.title }}</b></h2>
+					<h2>in {{ item.data.subreddit }}</h2>
+					<h2>{{ item.data.num_comments }} comments</h2>
+					<h2>by {{ item.data.author }}</h2>
+					
+				</a>
+			</ion-item>
+		  </ion-list>
+
   </ion-tab>
 
-  <ion-tab title="Top">
-	<!-- Tab 3 content -->
+  <ion-tab title="Top" on-select="getPosts({type : 'top'})">
+
+	<ion-header-bar>
+	</ion-header-bar>
+
+	<ion-content 	id="reddit-posts-top"
+	 				overflow-scroll="true"
+                  	scroll-reaches-bottom
+                  	physical-list="#reddit-posts-top .list"
+                  	bottom-reached-event-name="scrollings.redditPostsBottomReached"
+                  	clear-threshold-event-name="scrollings.redditPostsClearThreshold"
+					wait-loader
+					append-to="#reddit-posts-top ion-list"
+					append-event-name="scrollings.showRedditPostsLoader"
+                 	 remove-event-name="scrollings.removeRedditPostsLoader"
+                  	loader-image-path="./img/reload.svg"
+                 	force-scroll-bottom="#reddit-posts-top"
+					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
+		  <ion-list>
+			<ion-item ng-repeat="item in redditPosts.top">
+				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
+					<img src="{{ item.data.thumbnail }}" alt="">
+					<h2>{{ item.data.score }}</h2>
+					<h2><b>{{ item.data.title }}</b></h2>
+					<h2>in {{ item.data.subreddit }}</h2>
+					<h2>{{ item.data.num_comments }} comments</h2>
+					<h2>by {{ item.data.author }}</h2>
+					
+				</a>
+			</ion-item>
+		  </ion-list>
+
   </ion-tab>
 
-  <ion-tab title="Random">
-	<!-- Tab 3 content -->
+  <ion-tab title="Rising" on-select="getPosts({type : 'rising'})">
+
+	<ion-header-bar>
+	</ion-header-bar>
+
+	<ion-content 	id="reddit-posts-rising"
+	 				overflow-scroll="true"
+                  	scroll-reaches-bottom
+                  	physical-list="#reddit-posts-rising .list"
+                  	bottom-reached-event-name="scrollings.redditPostsBottomReached"
+                  	clear-threshold-event-name="scrollings.redditPostsClearThreshold"
+					wait-loader
+					append-to="#reddit-posts-rising ion-list"
+					append-event-name="scrollings.showRedditPostsLoader"
+                 	 remove-event-name="scrollings.removeRedditPostsLoader"
+                  	loader-image-path="./img/reload.svg"
+                 	force-scroll-bottom="#reddit-posts-rising"
+					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
+		  <ion-list>
+			<ion-item ng-repeat="item in redditPosts.rising">
+				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
+					<img src="{{ item.data.thumbnail }}" alt="">
+					<h2>{{ item.data.score }}</h2>
+					<h2><b>{{ item.data.title }}</b></h2>
+					<h2>in {{ item.data.subreddit }}</h2>
+					<h2>{{ item.data.num_comments }} comments</h2>
+					<h2>by {{ item.data.author }}</h2>
+					
+				</a>
+			</ion-item>
+		  </ion-list>
+
   </ion-tab>
-  <ion-tab title="Controversial">
-	<!-- Tab 3 content -->
+  <ion-tab title="Controversial" on-select="getPosts({type : 'controversial'})">
+	<ion-header-bar>
+	</ion-header-bar>
+
+	<ion-content 	id="reddit-posts-controversial"
+	 				overflow-scroll="true"
+                  	scroll-reaches-bottom
+                  	physical-list="#reddit-posts-controversial .list"
+                  	bottom-reached-event-name="scrollings.redditPostsBottomReached"
+                  	clear-threshold-event-name="scrollings.redditPostsClearThreshold"
+					wait-loader
+					append-to="#reddit-posts-controversial ion-list"
+					append-event-name="scrollings.showRedditPostsLoader"
+                 	 remove-event-name="scrollings.removeRedditPostsLoader"
+                  	loader-image-path="./img/reload.svg"
+                 	force-scroll-bottom="#reddit-posts-controversial"
+					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
+		  <ion-list>
+			<ion-item ng-repeat="item in redditPosts.controversial">
+				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
+					<img src="{{ item.data.thumbnail }}" alt="">
+					<h2>{{ item.data.score }}</h2>
+					<h2><b>{{ item.data.title }}</b></h2>
+					<h2>in {{ item.data.subreddit }}</h2>
+					<h2>{{ item.data.num_comments }} comments</h2>
+					<h2>by {{ item.data.author }}</h2>
+					
+				</a>
+			</ion-item>
+		  </ion-list>
   </ion-tab>
 
 </ion-tabs>

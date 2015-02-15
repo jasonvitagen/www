@@ -44,7 +44,6 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
     }, function (err, response) {
       $scope.$broadcast('scrollings.removeSubredditsListLoader');
       $scope.$broadcast('scrollings.subredditsListClearThreshold');
-      console.log(response.data.data.after);
       redditStates.subredditsListAfter = response.data.data.after;
       redditStates.subredditsList = redditStates.subredditsList.concat(response.data.data.children);
       $scope.listings = $scope.listings.concat(response.data.data.children);
@@ -59,7 +58,6 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
   });
 
   $scope.filterSubredditsList = function (keyword) {
-    console.log(1, $scope.listings.length);
     var items = redditStates.subredditsList;
     if (angular.isDefined(keyword) && keyword != '') {
       var results = [];
@@ -70,9 +68,12 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
       }
       $scope.listings = results;
     } else {
-      console.log(2, $scope.listings.length);
       $scope.listings = items;
     }
+  }
+
+  $scope.selectSubreddit = function (args) {
+    $scope.$broadcast('subredditSelected', { subreddit : args.subreddit });
   }
 
 
@@ -92,19 +93,104 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
 }])
 
-.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', function($scope, $window, redditListings) {
+.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', 'reddit.states', function($scope, $window, redditListings, redditStates) {
 
   $scope.redditPosts = {};
+  redditStates.redditsPostsAfter = {};
+  redditStates.currentSubreddit = 'frontpage';
+  redditStates.currentType = 'hot';
 
-  // redditListings.getFrontPagePosts({
+  $scope.getFrontPagePosts = function (type, from) {
 
-  //   type : 'hot'
+    redditStates.currentType = type;
+    $scope.$broadcast('scrollings.showRedditPostsLoader');
 
-  // }, function (err, response) {
-  //   console.log(response.data.children);
-  //   $scope.redditPosts.hot = response.data.data.children;
+    redditListings.getFrontPagePosts({
 
-  // });
+      type : type, 
+      after : from == 'bottomReached' ? redditStates.redditsPostsAfter[type] : ''
+
+    }, function (err, response) {
+
+      $scope.$broadcast('scrollings.removeRedditPostsLoader');
+      $scope.$broadcast('scrollings.redditPostsClearThreshold');
+      redditStates.redditsPostsAfter[type] = response.data.data.after;
+      $scope.redditPosts[type] = angular.isDefined($scope.redditPosts[type]) && $scope.redditPosts[type].concat(response.data.data.children) || response.data.data.children;
+
+    });
+    
+  }
+
+  $scope.getSubredditPosts = function (subreddit, type, from) {
+
+    if (from == 'userSelect') {
+      for (key in $scope.redditPosts) {
+        $scope.redditPosts[key] = [];
+      }
+    }
+    console.log(subreddit, type, from);
+    redditStates.currentSubreddit = subreddit;
+    redditStates.currentType = type;
+    $scope.$broadcast('scrollings.showRedditPostsLoader');
+
+    redditListings.getSubredditPosts({
+
+      subreddit : subreddit,
+      type : type, 
+      after : from == 'bottomReached' ? redditStates.redditsPostsAfter[type] : ''
+
+    }, function (err, response) {
+
+      $scope.$broadcast('scrollings.removeRedditPostsLoader');
+      $scope.$broadcast('scrollings.redditPostsClearThreshold');
+      redditStates.redditsPostsAfter[type] = response.data.data.after;
+      $scope.redditPosts[type] = angular.isDefined($scope.redditPosts[type]) && $scope.redditPosts[type].concat(response.data.data.children) || response.data.data.children;
+
+    });
+
+  }
+
+  $scope.$on('scrollings.redditPostsBottomReached', function () {
+    
+    switch (redditStates.currentSubreddit) {
+
+      case 'frontpage' :
+        $scope.getFrontPagePosts(redditStates.currentType, 'bottomReached');
+        break;
+      default :
+        $scope.getSubredditPosts(redditStates.currentSubreddit, redditStates.currentType, 'bottomReached');
+
+    }
+
+  });
+
+  
+  $scope.getFrontPagePosts('hot');
+
+  $scope.getPosts = function (args) {
+
+    switch (redditStates.currentSubreddit) {
+
+      case 'frontpage' :
+        $scope.getFrontPagePosts(args.type, 'userSelect');
+        break;
+      default :
+        $scope.getSubredditPosts(redditStates.currentSubreddit, args.type, 'tabChanged');
+        break;
+    }
+
+  }
+
+
+  $scope.$on('subredditSelected', function (event, args) {
+    console.log(args);
+    $scope.getSubredditPosts(args.subreddit, redditStates.currentType, 'userSelect');
+  });
+
+  $scope.openLink = function (item) {
+    window.open(item.data.url, '_blank');
+  }
+
 
 }])
 

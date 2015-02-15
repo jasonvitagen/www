@@ -15,7 +15,18 @@ angular
 		this.getFrontPagePosts = function (args, callback) {
 
 			$http
-				.get(baseUrl + args.type + '.json')
+				.get(baseUrl + args.type + '.json?' + queryStringBuilder(args))
+				.then(function (data) {
+					console.log(data);
+					callback(null, data);
+				});
+
+		}
+
+		this.getSubredditPosts = function (args, callback) {
+
+			$http
+				.get(baseUrl + 'r/' + args.subreddit + '/' + args.type + '.json?' + queryStringBuilder(args))
 				.then(function (data) {
 					console.log(data);
 					callback(null, data);
