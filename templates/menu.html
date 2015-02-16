@@ -59,11 +59,6 @@
         <ion-item nav-clear>
           <input type="text" ng-model="subredditListsKeyword" ng-change="filterSubredditsList(subredditListsKeyword)" placeholder="Filter Subreddits List">
         </ion-item>
-        <ion-item nav-clear menu-close>
-          <a href="" ng-click="selectSubreddit({subreddit : 'gonewild'})">
-            Gone Wild
-          </a>
-        </ion-item>
         <ion-item nav-clear menu-close ng-repeat="item in listings">
           <a href="" ng-click="selectSubreddit({subreddit : item.data.display_name})">
             {{ item.data.title }}

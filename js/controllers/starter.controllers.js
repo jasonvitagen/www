@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
-.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', 'reddit.states', '$filter', '$ionicLoading', function($scope, $ionicModal, $timeout, redditListings, redditStates, $filter, $ionicLoading) {
+.controller('AppCtrl', ['$scope', '$ionicModal', '$timeout', 'reddit.listings', 'reddit.states', '$filter', '$ionicLoading', 'queryStringBuilder', function($scope, $ionicModal, $timeout, redditListings, redditStates, $filter, $ionicLoading, queryStringBuilder) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -32,26 +32,34 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
     }, 1000);
   };
 
+  // starting states
   $scope.listings = [];
   redditStates.subredditsList = [];
 
-  $scope.users = {};
   $scope.getSubredditsList = function () {
 
     $scope.$broadcast('scrollings.showSubredditsListLoader');
+
     redditListings.getSubredditList({
-      after : redditStates.subredditsListAfter
+      queryString : queryStringBuilder({'after' : redditStates.subredditsListAfter})
     }, function (err, response) {
+
+      if (err) {
+        return console.log(err);
+      }
+
       $scope.$broadcast('scrollings.removeSubredditsListLoader');
       $scope.$broadcast('scrollings.subredditsListClearThreshold');
+
       redditStates.subredditsListAfter = response.data.data.after;
       redditStates.subredditsList = redditStates.subredditsList.concat(response.data.data.children);
       $scope.listings = $scope.listings.concat(response.data.data.children);
+
     });
 
   }
 
-  $scope.getSubredditsList();
+  $scope.getSubredditsList(); // to be run on load
 
   $scope.$on('scrollings.subredditsListBottomReached', function () {
     $scope.getSubredditsList();
@@ -73,7 +81,9 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
   }
 
   $scope.selectSubreddit = function (args) {
-    $scope.$broadcast('subredditSelected', { subreddit : args.subreddit });
+    $scope.$broadcast('subredditSelected', {
+      subreddit : args.subreddit
+    });
   }
 
 
@@ -93,58 +103,100 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
 }])
 
-.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', 'reddit.states', function($scope, $window, redditListings, redditStates) {
+.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', 'reddit.states', 'queryStringBuilder', function($scope, $window, redditListings, redditStates, queryStringBuilder) {
 
+  // starting states
   $scope.redditPosts = {};
   redditStates.redditsPostsAfter = {};
   redditStates.currentSubreddit = 'frontpage';
   redditStates.currentType = 'hot';
 
-  $scope.getFrontPagePosts = function (type, from) {
+  $scope.getFrontPagePosts = function (args) {
 
-    redditStates.currentType = type;
+    var after = '';
+
+    if (!args) {
+      return console.log('No args');
+    }
+    if (!args.type) {
+      return console.log('No type arg');
+    }
+    if (args.from) {
+      
+      if (args.from == 'bottomReached') {
+        after = redditStates.redditsPostsAfter[args.type];
+      }
+
+    }
+
+    redditStates.currentType = args.type;
     $scope.$broadcast('scrollings.showRedditPostsLoader');
 
     redditListings.getFrontPagePosts({
 
-      type : type, 
-      after : from == 'bottomReached' ? redditStates.redditsPostsAfter[type] : ''
+      type : args.type,
+      queryString : queryStringBuilder({
+        after : after
+      })
 
     }, function (err, response) {
 
+      if (err) {
+        return console.log(err);
+      }
+
       $scope.$broadcast('scrollings.removeRedditPostsLoader');
       $scope.$broadcast('scrollings.redditPostsClearThreshold');
-      redditStates.redditsPostsAfter[type] = response.data.data.after;
-      $scope.redditPosts[type] = angular.isDefined($scope.redditPosts[type]) && $scope.redditPosts[type].concat(response.data.data.children) || response.data.data.children;
+      redditStates.redditsPostsAfter[args.type] = response.data.data.after;
+      $scope.redditPosts[args.type] = angular.isDefined($scope.redditPosts[args.type]) && $scope.redditPosts[args.type].concat(response.data.data.children) || response.data.data.children;
 
     });
     
   }
 
-  $scope.getSubredditPosts = function (subreddit, type, from) {
+  $scope.getSubredditPosts = function (args) {
 
-    if (from == 'userSelect') {
-      for (key in $scope.redditPosts) {
-        $scope.redditPosts[key] = [];
-      }
+    var after = '';
+
+    if (!args) {
+      return console.log('No args');
     }
-    console.log(subreddit, type, from);
-    redditStates.currentSubreddit = subreddit;
-    redditStates.currentType = type;
+    if (!args.subreddit) {
+      return console.log('No "subreddit" arg');
+    }
+    if (!args.type) {
+      return console.log('No "type" arg');
+    }
+    if (args.from) {
+
+      if (args.from == 'bottomReached') {
+        after = redditStates.redditsPostsAfter[args.type];
+      }
+
+      if (args.from == 'userSelect') { // new subreddit selected, reset all types of existing listings
+        for (key in $scope.redditPosts) {
+          $scope.redditPosts[key] = [];
+        }
+      }
+
+    }
+
+    redditStates.currentSubreddit = args.subreddit;
+    redditStates.currentType = args.type;
     $scope.$broadcast('scrollings.showRedditPostsLoader');
 
     redditListings.getSubredditPosts({
 
-      subreddit : subreddit,
-      type : type, 
-      after : from == 'bottomReached' ? redditStates.redditsPostsAfter[type] : ''
+      subreddit : args.subreddit,
+      type : args.type,
+      queryString : queryStringBuilder({ after : after })
 
     }, function (err, response) {
-
+      console.log(args);
       $scope.$broadcast('scrollings.removeRedditPostsLoader');
       $scope.$broadcast('scrollings.redditPostsClearThreshold');
-      redditStates.redditsPostsAfter[type] = response.data.data.after;
-      $scope.redditPosts[type] = angular.isDefined($scope.redditPosts[type]) && $scope.redditPosts[type].concat(response.data.data.children) || response.data.data.children;
+      redditStates.redditsPostsAfter[args.type] = response.data.data.after;
+      $scope.redditPosts[args.type] = angular.isDefined($scope.redditPosts[args.type]) && $scope.redditPosts[args.type].concat(response.data.data.children) || response.data.data.children;
 
     });
 
@@ -155,27 +207,51 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
     switch (redditStates.currentSubreddit) {
 
       case 'frontpage' :
-        $scope.getFrontPagePosts(redditStates.currentType, 'bottomReached');
+        $scope.getFrontPagePosts({
+          type : redditStates.currentType,
+          from : 'bottomReached'
+        });
         break;
       default :
-        $scope.getSubredditPosts(redditStates.currentSubreddit, redditStates.currentType, 'bottomReached');
+        $scope.getSubredditPosts({
+          subreddit : redditStates.currentSubreddit,
+          type : redditStates.currentType,
+          from : 'bottomReached'
+        });
 
     }
 
   });
 
   
-  $scope.getFrontPagePosts('hot');
+  $scope.getFrontPagePosts({
+    type : 'hot',
+    from : 'onLoad'
+  });
 
   $scope.getPosts = function (args) {
+
+    if (!args) {
+      return console.log('No args');
+    }
+    if (!args.type) {
+      return console.log('No "type" arg');
+    }
 
     switch (redditStates.currentSubreddit) {
 
       case 'frontpage' :
-        $scope.getFrontPagePosts(args.type, 'userSelect');
+        $scope.getFrontPagePosts({
+          type : args.type,
+          from : 'userSelect'
+        });
         break;
       default :
-        $scope.getSubredditPosts(redditStates.currentSubreddit, args.type, 'tabChanged');
+        $scope.getSubredditPosts({
+          subreddit : redditStates.currentSubreddit,
+          type : args.type,
+          from : 'tabChanged'
+        });
         break;
     }
 
@@ -183,9 +259,22 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
 
   $scope.$on('subredditSelected', function (event, args) {
-    console.log(args);
-    $scope.getSubredditPosts(args.subreddit, redditStates.currentType, 'userSelect');
+
+    if (!args) {
+      return console.log('No args');
+    }
+    if (!args.subreddit) {
+      return console.log('No "subreddit" arg');
+    }
+
+    $scope.getSubredditPosts({
+      subreddit : args.subreddit,
+      type : redditStates.currentType,
+      from : 'userSelect'
+    });
+
   });
+
 
   $scope.openLink = function (item) {
     window.open(item.data.url, '_blank');
