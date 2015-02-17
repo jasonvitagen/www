@@ -23,6 +23,31 @@ angular
 		return queryStringBuilder;	
 
 	}])
+	.factory('customId', [function () {
+
+		var customId = function (args, callback) {
+
+			if (!args) {
+				return callback('No args');
+			}
+			if (!args.items) {
+				return callback('No items');
+			}
+			if (typeof args.startIndex == 'undefined') {
+				return callback('No start index');
+			}
+
+			return Lazy(args.items)
+						.map(function (item) {
+							return item.customId = args.startIndex++;
+						})
+						.toArray();
+
+		}
+
+		return customId;
+
+	}])
 	.directive('onInfiniteScrolling', ['$window', function ($window) {
 
 	  var ddo = {};

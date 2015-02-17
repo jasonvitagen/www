@@ -58,6 +58,16 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
+  .state('app.redditComments', {
+    url : '/redditComments/:subreddit/:articleId',
+    views : {
+      'menuContent' : {
+        templateUrl : 'templates/redditComments.html',
+        controller: 'redditCommentsCtrl'
+      }
+    }
+  })
+
   .state('app.single', {
     url: "/playlists/:playlistId",
     views: {

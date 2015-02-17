@@ -29,13 +29,13 @@
                  	force-scroll-bottom="#reddit-posts-hot"
 					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
 		  <ion-list>
-			<ion-item ng-repeat="item in redditPosts.hot">
+			<ion-item ng-repeat="item in redditPosts.hot track by item.customId">
 				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
 					<img src="{{ item.data.thumbnail }}" alt="">
 					<h2>{{ item.data.score }}</h2>
 					<h2><b>{{ item.data.title }}</b></h2>
 					<h2>in {{ item.data.subreddit }}</h2>
-					<h2>{{ item.data.num_comments }} comments</h2>
+					<h2><a href="#/app/redditComments/{{ item.data.subreddit }}/{{ item.data.id }}">{{ item.data.num_comments }} comments</a></h2>
 					<h2>by {{ item.data.author }}</h2>
 					
 				</a>
@@ -65,7 +65,7 @@
                  	force-scroll-bottom="#reddit-posts-new"
 					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
 		  <ion-list>
-			<ion-item ng-repeat="item in redditPosts.new">
+			<ion-item ng-repeat="item in redditPosts.new track by item.customId">
 				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
 					<img src="{{ item.data.thumbnail }}" alt="">
 					<h2>{{ item.data.score }}</h2>
@@ -99,7 +99,7 @@
                  	force-scroll-bottom="#reddit-posts-top"
 					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
 		  <ion-list>
-			<ion-item ng-repeat="item in redditPosts.top">
+			<ion-item ng-repeat="item in redditPosts.top track by item.customId">
 				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
 					<img src="{{ item.data.thumbnail }}" alt="">
 					<h2>{{ item.data.score }}</h2>
@@ -133,7 +133,7 @@
                  	force-scroll-bottom="#reddit-posts-rising"
 					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
 		  <ion-list>
-			<ion-item ng-repeat="item in redditPosts.rising">
+			<ion-item ng-repeat="item in redditPosts.rising track by item.customId">
 				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
 					<img src="{{ item.data.thumbnail }}" alt="">
 					<h2>{{ item.data.score }}</h2>
@@ -165,7 +165,7 @@
                  	force-scroll-bottom="#reddit-posts-controversial"
 					loader-css='{"margin" : "0 auto", "display" : "block", "width" : "25px", "height" : "25px"}'>
 		  <ion-list>
-			<ion-item ng-repeat="item in redditPosts.controversial">
+			<ion-item ng-repeat="item in redditPosts.controversial track by item.customId">
 				<a class="item item-thumbnail-left" href="" ng-click="openLink(item)">
 					<img src="{{ item.data.thumbnail }}" alt="">
 					<h2>{{ item.data.score }}</h2>

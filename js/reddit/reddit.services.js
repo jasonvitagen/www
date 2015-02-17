@@ -34,7 +34,6 @@ angular
 			$http
 				.get(baseUrl + args.type + '.json?' + args.queryString)
 				.then(function (data) {
-					console.log(data);
 					callback(null, data);
 				});
 
@@ -58,7 +57,26 @@ angular
 			$http
 				.get(baseUrl + 'r/' + args.subreddit + '/' + args.type + '.json?' + args.queryString)
 				.then(function (data) {
-					console.log(data);
+					callback(null, data);
+				});
+
+		}
+
+		this.getRedditComments = function (args, callback) {
+
+			if (!args) {
+				return callback('No args');
+			}
+			if (!args.subreddit) {
+				return callback('No "subreddit" arg');
+			}
+			if (!args.articleId) {
+				return callback('No article id');
+			}
+
+			$http
+				.get(baseUrl + 'r/' + args.subreddit + '/comments/' + args.articleId + '.json')
+				.then(function (data) {
 					callback(null, data);
 				});
 

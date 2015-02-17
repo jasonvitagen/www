@@ -103,7 +103,7 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
 }])
 
-.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', 'reddit.states', 'queryStringBuilder', function($scope, $window, redditListings, redditStates, queryStringBuilder) {
+.controller('redditPostsCtrl', ['$scope', '$window', 'reddit.listings', 'reddit.states', 'queryStringBuilder', 'customId', function($scope, $window, redditListings, redditStates, queryStringBuilder, customId) {
 
   // starting states
   $scope.redditPosts = {};
@@ -145,11 +145,24 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
         return console.log(err);
       }
 
+      customId({
+        items : response.data.data.children,
+        startIndex : angular.isDefined($scope.redditPosts[args.type]) && $scope.redditPosts[args.type].length || 0
+      }, function (err, response) {
+
+        if (err) {
+          return console.log(err);
+        }
+
+        response.data.data.children = response;
+
+      });
+
       $scope.$broadcast('scrollings.removeRedditPostsLoader');
       $scope.$broadcast('scrollings.redditPostsClearThreshold');
       redditStates.redditsPostsAfter[args.type] = response.data.data.after;
       $scope.redditPosts[args.type] = angular.isDefined($scope.redditPosts[args.type]) && $scope.redditPosts[args.type].concat(response.data.data.children) || response.data.data.children;
-
+      console.log($scope.redditPosts[args.type]);
     });
     
   }
@@ -192,7 +205,24 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
       queryString : queryStringBuilder({ after : after })
 
     }, function (err, response) {
-      console.log(args);
+      
+      if (err) {
+        return console.log(err);
+      }
+
+      customId({
+        items : response.data.data.children,
+        startIndex : angular.isDefined($scope.redditPosts[args.type]) && $scope.redditPosts[args.type].length || 0
+      }, function (err, response) {
+
+        if (err) {
+          return console.log(err);
+        }
+
+        response.data.data.children = response;
+
+      });
+
       $scope.$broadcast('scrollings.removeRedditPostsLoader');
       $scope.$broadcast('scrollings.redditPostsClearThreshold');
       redditStates.redditsPostsAfter[args.type] = response.data.data.after;
@@ -223,11 +253,6 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
 
   });
 
-  
-  $scope.getFrontPagePosts({
-    type : 'hot',
-    from : 'onLoad'
-  });
 
   $scope.getPosts = function (args) {
 
@@ -281,6 +306,23 @@ angular.module('starter.controllers', ['reddit', 'helpers', 'scrollings'])
   }
 
 
+}])
+
+.controller('redditCommentsCtrl', ['$scope', '$stateParams', 'reddit.listings', function ($scope, $stateParams, redditListings) {
+  console.log($stateParams.articleId);
+  console.log($stateParams.subreddit);
+  redditListings.getRedditComments({
+    subreddit : $stateParams.subreddit,
+    articleId : $stateParams.articleId
+  }, function (err, response) {
+
+    if (err) {
+      return console.log(err);
+    }
+
+    $scope.comments = response.data[1];
+
+  });
 }])
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
